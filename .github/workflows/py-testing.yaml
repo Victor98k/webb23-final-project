@@ -15,7 +15,7 @@ jobs:
 
     # Services container to run PostgreSQL
     services:
-      db: # Changed from 'postgres' to 'db'
+      db:
         image: postgres:12
         env:
           POSTGRES_USER: postgres
@@ -45,13 +45,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Step to wait for PostgreSQL
-      #   - name: Wait for PostgreSQL
-      #     run: |
-      #       db
+      # Add a step to wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h db -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL to become ready..."
+            sleep 2
+          done
+
+      # Step to run migrations
+      - name: Run migrations
+        run: |
+          python blog_project/manage.py migrate
 
       # Step to run tests
       - name: Run tests
         run: |
-          python blog_project/manage.py migrate
           python blog_project/manage.py test
