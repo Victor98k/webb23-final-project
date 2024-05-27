@@ -53,6 +53,10 @@ jobs:
             sleep 2
           done
 
+          # Step to print PostgreSQL logs for debugging
+      - name: Print PostgreSQL logs
+        run: docker logs $(docker ps -q --filter "ancestor=postgres:12")
+
       # Step to run migrations
       - name: Run migrations
         run: |
