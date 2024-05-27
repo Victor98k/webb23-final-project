@@ -14,3 +14,4 @@ services: # Definierar tjänsterna som kommer att köras i din Docker Compose-ap
 
     environment: # Miljövariabler som skickas till containern
       POSTGRES_PASSWORD: example # Sätter lösenordet för Postgres databasadministratören
+#hejhejhejhej
