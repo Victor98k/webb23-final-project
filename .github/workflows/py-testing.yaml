@@ -48,10 +48,7 @@ jobs:
       # Step to wait for PostgreSQL
       - name: Wait for PostgreSQL
         run: |
-          until nc -z db 5432; do
-            echo "waiting for database"
-            sleep 2
-          done
+          db
 
       # Step to run tests
       - name: Run tests
