@@ -16,7 +16,7 @@ jobs:
     # Services container to run PostgreSQL
     services:
       db:
-        image: postgres:alpine3.20
+        image: postgres
 
         env:
           POSTGRES_USER: postgres
