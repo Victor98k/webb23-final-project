@@ -20,7 +20,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: db
+          POSTGRES_DB: django_db
         ports:
           - 5432:5432
         options: >-
@@ -46,8 +46,10 @@ jobs:
         run: pip install -r requirements.txt
 
       # Step to wait for PostgreSQL to be ready
-      #   - name: Wait for PostgreSQL
-      #     uses: docker/wait-for-postgres@v1
+      - name: Wait for PostgreSQL
+        uses: docker/wait-for-postgres@v1
+        with:
+          host: django_db
 
       # Step to run tests
       - name: Run tests
