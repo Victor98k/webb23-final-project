@@ -46,12 +46,12 @@ jobs:
         run: pip install -r requirements.txt
 
       # Add a step to wait for PostgreSQL to be ready
-      - name: Wait for PostgreSQL
-        run: |
-          until pg_isready -h db -p 5432 -U postgres; do
-            echo "Waiting for PostgreSQL to become ready..."
-            sleep 2
-          done
+      #   - name: Wait for PostgreSQL
+      #     run: |
+      #       until pg_isready -h db -p 5432 -U postgres; do
+      #         echo "Waiting for PostgreSQL to become ready..."
+      #         sleep 2
+      #       done
 
       # Step to run migrations
       - name: Run migrations
