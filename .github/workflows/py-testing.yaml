@@ -46,8 +46,8 @@ jobs:
         run: pip install -r requirements.txt
 
       # Step to wait for PostgreSQL to be ready
-      - name: Wait for PostgreSQL
-        uses: docker/wait-for-postgres@v1
+      #   - name: Wait for PostgreSQL
+      #     uses: docker/wait-for-postgres@v1
 
       # Step to run tests
       - name: Run tests
