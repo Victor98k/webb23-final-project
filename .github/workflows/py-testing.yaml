@@ -1,23 +1,33 @@
 # Name of the GitHub Actions workflow
-name: Node.js CI
+name: Python Django CI
 
 # Defines when the workflow should run
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 # Defines the jobs that will be executed
 jobs:
-  # Job name
   build:
     # Specifies the type of machine to run the job on
     runs-on: ubuntu-latest
 
-    # Define a matrix strategy to test with multiple MongoDB versions
-    strategy:
-      matrix:
-        mongodb-version: ["4.4.14", "5.0.9"]
+    # Services container to run PostgreSQL
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: django_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     # Defines the steps to execute in the job
     steps:
@@ -25,28 +35,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Start MongoDB
-        uses: MongoCamp/mongodb-github-action@1.0.0
+      # Step to set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-
-      # Step to set up Node.js environment
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "lts/*" # Use the latest LTS version of Node.js
+          python-version: "3.8"
 
       # Step to install project dependencies
       - name: Install dependencies
-        run: npm install
+        run: pip install -r requirements.txt
 
-      # Step to create .env file with MongoDB URIs
-      - name: Create .env file
-        run: |
-          cat << EOF >> ./.env
-          TEST_MONGODB_URI= mongodb://localhost:27017/test
-          EOF
+      # Step to wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL
+        uses: docker/wait-for-postgres@v1
 
       # Step to run tests
       - name: Run tests
-        run: npm test
+        run: |
+          python blog_project/manage.py migrate
+          python blog_project/manage.py test
