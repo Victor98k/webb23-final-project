@@ -26,9 +26,9 @@ jobs:
           - 5432:5432
         options: >-
           --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-interval 20s  # Increased interval
+          --health-timeout 10s  # Increased timeout
+          --health-retries 10   # Increased retries
 
     # Defines the steps to execute in the job
     steps:
@@ -49,7 +49,7 @@ jobs:
       # Step to wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL
         run: |
-          until pg_isready -h db -p 5432 -U postgres; do
+          until pg_isready -h localhost -p 5432 -U postgres; do  # Changed 'db' to 'localhost'
             echo "Waiting for PostgreSQL..."
             sleep 5
           done
@@ -63,3 +63,8 @@ jobs:
       - name: Run tests
         run: |
           python blog_project/manage.py test
+
+      # Step to print PostgreSQL logs (if needed)
+      - name: Print PostgreSQL logs (if needed)
+        if: failure() # This step runs if any of the previous steps fail
+        run: docker logs db
