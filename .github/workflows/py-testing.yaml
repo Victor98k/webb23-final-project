@@ -45,11 +45,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Step to wait for PostgreSQL to be ready
+      # Step to wait for PostgreSQL
       - name: Wait for PostgreSQL
-        uses: docker/wait-for-postgres@v1
-        with:
-          host: django_db
+        run: |
+          until nc -z ${{ secrets.DB_HOST }} 5432; do
+            echo "waiting for database"
+            sleep 2
+          done
 
       # Step to run tests
       - name: Run tests
