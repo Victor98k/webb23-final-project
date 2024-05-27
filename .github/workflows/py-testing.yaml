@@ -15,7 +15,7 @@ jobs:
 
     # Services container to run PostgreSQL
     services:
-      db: # Changed from 'postgres' to 'db'
+      django_db: # Changed from 'postgres' to 'db'
         image: postgres:12
         env:
           POSTGRES_USER: postgres
