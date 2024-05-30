@@ -1,17 +1,38 @@
-services: # Definierar tjänsterna som kommer att köras i din Docker Compose-applikation
-  web: # Tjänsten heter 'web'
-    image: py-app # Använder den senaste versionen av Nginx-bilden från Docker Hub
-    ports: # Exponerar portar för att komma åt tjänsten från värddatorn
-      - "3000" # Binder port 8080 på värddatorn till port 80 i containern (där Nginx körs)
-    develop: # (Notera: Detta är inte en standardnyckel i Docker Compose)
-      watch: # Tittar efter filändringar och utför definierade åtgärder
-        - action: sync # Synkroniserar filer
-          path: ./site # Lokala sökvägen till katalogen som ska synkroniseras
-          target: /usr/share/nginx/html # Sökväg i containern där filerna synkroniseras till
+# Victor Hall individuelluppgift
+version: "3.8"
 
-  db: # Tjänsten heter 'db'
-    image: postgres:latest # Använder den senaste versionen av Postgres-bilden från Docker Hub
+# Services skapar en endpoint som gör att vi kan komma åt för att få tillgång till appen som körs.
+# Här lägger vi till en DB service som gör att våran DB använder en POSTGRES imagae.
+# Efter det så anger vi våra env-variabler som ger oss tillgång till våran app / db
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: django_db
+      # Sedan anger vi en service som kallas volumes. Detta gör så att datan från våran DB sparas i en volume utanför våran container.
+      # Med detta betyder det att våran data kommer finnas tillänglig även fast våran container skulle stoppas, tas bort eller startas om.
+      # Volumes = ingen data försvinner oavsett vad som händer med våran container.
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
-    environment: # Miljövariabler som skickas till containern
-      POSTGRES_PASSWORD: example # Sätter lösenordet för Postgres databasadministratören
-#hejhejhejhej
+      # Sedan anger vi detaljer till våran web service.
+
+  web:
+    build: .
+    # I våran web service börjar vi med våran build command där vi anger .
+    # Vi anger . för att markera att vi vill bygga utifrån våran current directory.
+    command: python blog_project/manage.py runserver 0.0.0.0:8000
+    # Vi använder command och hänvisar till våran manage.py fil som startar våran django development server.
+    # Här definerar vi porten så vi kan få tillgång till våran app på min lokala maskin.
+    ports:
+      - "8000:8000"
+      # Sista steget betyder att våran db service måste vara klar innan våran web service kan starta.
+    depends_on:
+      - db
+
+# Här definerar vi våran volume som är avsedd för våran APP.
+# Vi definerar den så det går att använda i andra docker compose filer.
+volumes:
+  db_data:

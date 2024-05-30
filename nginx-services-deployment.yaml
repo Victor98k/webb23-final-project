@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx # Metadata labels för att identifiera objektet
 spec:
-  replicas: 2 # Antalet repliker (Pods) som ska köras
+  replicas: 2 # Antalet repliker (Pods) som ska köras. Failar en pod kommer kubenetes starta en ny pods så vi alltid har 2st igång.
   selector:
     matchLabels:
       app: nginx # Etikett som Pods måste matcha för att tillhöra denna Deployment
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: py-app # Docker-bilden som används för containern
+          image: py-app # Docker-bilden som används för containern. Så först bygger vi våran docker container och namnger den py-app
           imagePullPolicy: Never
           ports:
             - containerPort: 8000 # Port som containern lyssnar på
